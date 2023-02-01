@@ -1,14 +1,3 @@
-% Here's an example of real-time smoothed peak detection that you can run
-% on your computer in Matlab or Octave without any additional hardware. It
-% uses pre-calculated simulated data (stored in DataMatrix.mat,
-% downloaded from my web site), which is loaded into Matlab in line 17 and
-% accessed point-by-point in lines 34 and 35.
-% (If you wish you can change 'maxn' in line 18, SmoothWidth in line 22),
-%  AmpThreshold in line 23, and the y-axis graph limits in line 19.
-% To do this with real time data from a sensor, replace lines 34 and 35
-% with the code that acquires one data point from your sensor. Requires 
-% triangle, gaussian, and gaussfit functions from http://tinyurl.com/cey8rwh
-% Tom O'Haver (toh@umd.edu) 2018
 format compact
 format short g
 clf;clear
@@ -31,6 +20,8 @@ y=zeros(1,maxn); % y is vector of simulated data points y=DataMatrix2(:,2);
 sy=zeros(1,maxn); % sy is vector of smoothed data points
 tic
 PeakNumber=0;
+TroughNumber=0;
+
 for n=1:maxn
     x(n)=DataMatrix4(n,1);
     y(n)=DataMatrix4(n,2); % simulate a single data point from the data source
@@ -68,7 +59,7 @@ for n=1:maxn
                 if sy(n-1)<sy(n-2) % AND if a point is LESS than the the previous one
                     if sy(n-1)<sy(n) % AND LESS than the following one, register a trough.
                         [Height,Position,Width]=gaussfit(x(n-SmoothWidth:n),y(n-SmoothWidth:n));
-                        TroughNumber=PeakNumber+1;
+                        TroughNumber=TroughNumber+1;
                         text(Position,Height,[' trough ' num2str(PeakNumber)]) % Label the trough on the graph
                         disp(['Trough ' num2str(TroughNumber) ' detected at x=' num2str(Position) ', y=' num2str(Height)  ', width= ' num2str(Width) ])
                         TroughTable(TroughNumber,:)=[TroughNumber,Position,Height,Width];
